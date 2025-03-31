@@ -5,14 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Brújula Malvinas</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos temporales para debug */
+        body { background-color: #f0f8ff; }
+        #debug { color: red; font-weight: bold; }
+    </style>
 </head>
 <body>
     <div id="contenedor-principal">
         <div id="contenedor-brujula">
-            <div id="base-brujula"></div>
+            <img id="base-brujula" src="img/brujula.png" alt="Base de la brújula">
             <img id="aguja" src="img/flecha.png" alt="Aguja indicadora">
         </div>
         <p id="mensaje">La aguja apunta a Puerto Argentino. Permite el acceso a tu ubicación.</p>
+        <p id="debug"></p> <!-- Solo para pruebas -->
     </div>
 
     <script src="script.js"></script>
