@@ -1,95 +1,78 @@
-// Coordenadas de Puerto Argentino (Malvinas)
-const PUERTO_ARGENTINO = {
-    lat: -51.6954,
-    lon: -57.8500
-};
+// Debug inicial
+document.getElementById('debug').textContent = "Cargando...";
 
-// Variables de estado
-let ultimaLatitud = null;
-let ultimaLongitud = null;
-let ultimoHeading = null;
+// Configuración
+const PUERTO_ARGENTINO = { lat: -51.6954, lon: -57.8500 };
+let ubicacionActual = null;
+let orientacionActual = null;
 
-// Función para calcular el ángulo hacia Malvinas
-function calcularAnguloHaciaMalvinas(lat, lon) {
-    const dLon = (PUERTO_ARGENTINO.lon - lon) * Math.PI / 180;
-    const latRad = lat * Math.PI / 180;
-    const malvinasLatRad = PUERTO_ARGENTINO.lat * Math.PI / 180;
+// Elementos DOM
+const baseBrujula = document.getElementById('base-brujula');
+const aguja = document.getElementById('aguja');
+const debug = document.getElementById('debug');
+
+// Calcula dirección hacia Malvinas
+function calcularDireccion(lat, lon) {
+    const φ1 = lat * Math.PI/180;
+    const φ2 = PUERTO_ARGENTINO.lat * Math.PI/180;
+    const Δλ = (PUERTO_ARGENTINO.lon - lon) * Math.PI/180;
     
-    const y = Math.sin(dLon) * Math.cos(malvinasLatRad);
-    const x = Math.cos(latRad) * Math.sin(malvinasLatRad) - 
-              Math.sin(latRad) * Math.cos(malvinasLatRad) * Math.cos(dLon);
-    
-    return Math.atan2(y, x) * 180 / Math.PI;
+    const y = Math.sin(Δλ) * Math.cos(φ2);
+    const x = Math.cos(φ1)*Math.sin(φ2) - Math.sin(φ1)*Math.cos(φ2)*Math.cos(Δλ);
+    return Math.atan2(y, x) * 180/Math.PI;
 }
 
-// Actualiza la brújula con los nuevos datos
+// Actualiza la visualización
 function actualizarBrujula() {
-    const baseBrujula = document.getElementById('base-brujula');
-    const aguja = document.getElementById('aguja');
+    if (!ubicacionActual) return;
     
-    // Rotar la base según el norte físico (solo en móviles)
-    if (ultimoHeading !== null) {
-        baseBrujula.style.transform = `rotate(${-ultimoHeading}deg)`;
+    const angulo = calcularDireccion(ubicacionActual.lat, ubicacionActual.lon);
+    aguja.style.transform = `translate(-50%, -50%) rotate(${angulo}deg)`;
+    
+    if (orientacionActual !== null) {
+        baseBrujula.style.transform = `rotate(${-orientacionActual}deg)`;
     }
     
-    // Rotar la aguja hacia Malvinas (si hay ubicación)
-    if (ultimaLatitud !== null && ultimaLongitud !== null) {
-        const angulo = calcularAnguloHaciaMalvinas(ultimaLatitud, ultimaLongitud);
-        aguja.style.transform = `translate(-50%, -100%) rotate(${angulo}deg)`;
-    }
+    debug.textContent = `Lat: ${ubicacionActual.lat.toFixed(4)}, Lon: ${ubicacionActual.lon.toFixed(4)}, Ángulo: ${angulo.toFixed(1)}°`;
 }
 
-// Maneja los datos del giroscopio
-function manejarOrientacion(event) {
-    if (event.alpha !== null) {
-        ultimoHeading = event.webkitCompassHeading || event.alpha;
+// Maneja geolocalización
+navigator.geolocation.watchPosition(
+    pos => {
+        ubicacionActual = {
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude
+        };
+        actualizarBrujula();
+    },
+    err => {
+        debug.textContent = `Error GPS: ${err.message}`;
+        // Modo demo
+        ubicacionActual = { lat: -34.6037, lon: -58.3816 }; // Buenos Aires
+        actualizarBrujula();
+    },
+    { enableHighAccuracy: true }
+);
+
+// Maneja orientación (giroscopio)
+window.addEventListener('deviceorientation', ev => {
+    if (ev.alpha !== null) {
+        orientacionActual = ev.webkitCompassHeading || ev.alpha;
         actualizarBrujula();
     }
-}
+});
 
-// Solicita permisos en iOS
-function solicitarPermisosIOS() {
+// Permisos para iOS
+document.getElementById('contenedor-brujula').addEventListener('click', () => {
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
         DeviceOrientationEvent.requestPermission()
             .then(response => {
                 if (response === 'granted') {
-                    window.addEventListener('deviceorientation', manejarOrientacion);
+                    window.addEventListener('deviceorientation', e => {
+                        orientacionActual = e.webkitCompassHeading || e.alpha;
+                        actualizarBrujula();
+                    });
                 }
-            })
-            .catch(console.error);
-    } else {
-        window.addEventListener('deviceorientation', manejarOrientacion);
+            });
     }
-}
-
-// Obtiene la ubicación del usuario
-function iniciarGeolocalizacion() {
-    if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(
-            (position) => {
-                ultimaLatitud = position.coords.latitude;
-                ultimaLongitud = position.coords.longitude;
-                actualizarBrujula();
-            },
-            (error) => {
-                console.error("Error de geolocalización:", error);
-                document.getElementById('mensaje').textContent = 
-                    "Error al obtener ubicación. Recarga la página e intenta nuevamente.";
-            },
-            { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
-        );
-    } else {
-        document.getElementById('mensaje').textContent = 
-            "Tu navegador no soporta geolocalización. Prueba con Chrome o Firefox.";
-    }
-}
-
-// Inicialización al cargar la página
-window.addEventListener('DOMContentLoaded', () => {
-    // Activar al hacer clic (requerido para iOS)
-    document.getElementById('contenedor-brujula').addEventListener('click', () => {
-        solicitarPermisosIOS();
-    });
-    
-    iniciarGeolocalizacion();
 });
