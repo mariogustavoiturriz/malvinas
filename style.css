@@ -1,66 +1,68 @@
-body {
+/* Reset básico */
+* {
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
+}
+
+body {
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     background-color: #f0f2f5;
     overflow: hidden;
 }
 
 #contenedor-principal {
     text-align: center;
+    position: relative;
 }
 
 #contenedor-brujula {
     position: relative;
     width: 300px;
     height: 300px;
-    margin: 0 auto 20px;
+    margin: 0 auto;
 }
 
 #base-brujula {
     width: 100%;
     height: 100%;
-    background: url('img/brujula.png') no-repeat center center;
-    background-size: contain;
+    object-fit: contain;
     position: absolute;
     top: 0;
     left: 0;
-    transition: transform 0.3s ease-out;
 }
 
 #aguja {
     position: absolute;
-    width: 40px;
-    height: 60px;
+    width: 8%; /* Tamaño relativo al contenedor */
+    height: auto;
+    max-height: 20%;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -100%);
-    transform-origin: 50% 100%;
+    transform: translate(-50%, -50%);
+    transform-origin: center bottom;
     z-index: 10;
     pointer-events: none;
-    transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 #mensaje {
-    color: #444;
+    margin-top: 20px;
+    color: #333;
     font-size: 14px;
-    max-width: 80%;
-    margin: 0 auto;
+    padding: 0 20px;
 }
 
-/* Estilos para móvil */
-@media (max-width: 480px) {
-    #contenedor-brujula {
-        width: 250px;
-        height: 250px;
-    }
-    
-    #aguja {
-        width: 35px;
-        height: 50px;
-    }
+/* Debug visual */
+#debug {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    background: white;
+    padding: 5px;
+    border-radius: 3px;
+    font-size: 12px;
 }
