@@ -18,10 +18,8 @@
     position: absolute;
     width: 40px;
     height: 60px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(0deg); /* Centrado perfecto */
-    transform-origin: center bottom; /* Pivote en la base de la flecha */
+    top: calc(150px - 30px); /* Mitad de height de #brujula (150px) - mitad de height de flecha (30px) */
+    left: calc(150px - 20px); /* Mitad de width de #brujula (150px) - mitad de width de flecha (20px) */
+    transform-origin: center bottom;
     transition: transform 0.5s ease-out;
-    z-index: 10;
 }
