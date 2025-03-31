@@ -1,9 +1,24 @@
-/* style.css */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f2f5;
+    overflow: hidden;
+}
+
+#contenedor-principal {
+    text-align: center;
+}
+
 #contenedor-brujula {
     position: relative;
     width: 300px;
     height: 300px;
-    margin: 0 auto;
+    margin: 0 auto 20px;
 }
 
 #base-brujula {
@@ -14,6 +29,7 @@
     position: absolute;
     top: 0;
     left: 0;
+    transition: transform 0.3s ease-out;
 }
 
 #aguja {
@@ -22,8 +38,29 @@
     height: 60px;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -100%); /* Ajuste fino para centrado */
-    transform-origin: 50% 100%; /* Pivote en la base */
+    transform: translate(-50%, -100%);
+    transform-origin: 50% 100%;
     z-index: 10;
     pointer-events: none;
+    transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+#mensaje {
+    color: #444;
+    font-size: 14px;
+    max-width: 80%;
+    margin: 0 auto;
+}
+
+/* Estilos para móvil */
+@media (max-width: 480px) {
+    #contenedor-brujula {
+        width: 250px;
+        height: 250px;
+    }
+    
+    #aguja {
+        width: 35px;
+        height: 50px;
+    }
 }
