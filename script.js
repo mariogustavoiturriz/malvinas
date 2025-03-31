@@ -15,13 +15,14 @@ function actualizarBrujula(lat, lon, heading = null) {
     const angulo = calcularAngulo(lat, lon, puertoArgentino.lat, puertoArgentino.lon);
     const flecha = document.getElementById('flecha');
     
+    // Solo actualiza la rotación (el centrado ya está en CSS)
+    flecha.style.transform = `translate(-50%, -50%) rotate(${angulo}deg)`;
+    
     if (heading !== null) {
-        // Brújula gira con el norte físico (solo en móviles)
         document.getElementById('brujula').style.transform = `rotate(${-heading}deg)`;
     }
-    // Flecha siempre apunta a Malvinas
-    flecha.style.transform = `rotate(${angulo}deg)`;
 }
+
 
 // Iniciar sensores (para móviles)
 function iniciarSensores() {
