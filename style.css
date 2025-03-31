@@ -3,7 +3,6 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    position: relative; /* Referencia para posicionamiento absoluto */
 }
 
 #brujula {
@@ -12,17 +11,17 @@
     background: url('img/brujula.png') no-repeat center center;
     background-size: contain;
     border-radius: 50%;
-    position: relative; /* Contenedor relativo para la flecha */
+    position: relative; /* Necesario para posicionar la flecha */
 }
 
 #flecha {
     position: absolute;
     width: 40px;
     height: 60px;
-    top: calc(50% - 30px); /* Centrado vertical (mitad de height) */
-    left: calc(50% - 20px); /* Centrado horizontal (mitad de width) */
-    transform-origin: center bottom; /* Gira desde la base */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg); /* Centrado perfecto */
+    transform-origin: center bottom; /* Pivote en la base de la flecha */
     transition: transform 0.5s ease-out;
     z-index: 10;
-    pointer-events: none; /* Evita interferencias con clics */
 }
